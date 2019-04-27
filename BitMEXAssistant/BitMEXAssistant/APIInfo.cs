@@ -1,16 +1,9 @@
 ﻿using BitMEX;
-using CsvHelper;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using MetroFramework.Forms;
+//using CsvHelper;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 using ToastNotifications;
 
 namespace BitMEXAssistant
@@ -20,9 +13,7 @@ namespace BitMEXAssistant
 
         BitMEXApi bitmex;
         public bool APIValid = false;
-        private bool formClosed = false;
-
-        public bool FormClosed { get => formClosed; set => formClosed = value; }
+        public bool DialogClosed = false;
 
         public APIInfo()
         {
@@ -56,6 +47,8 @@ namespace BitMEXAssistant
                     txtSecret.Text = Properties.Settings.Default.TestAPISecret;
                     break;
             }
+            tbProxy.Text = Properties.Settings.Default.Proxy;
+
         }
 
         private void btnValidate_Click(object sender, EventArgs e)
@@ -87,13 +80,11 @@ namespace BitMEXAssistant
                         }
                     }
                 }
-#pragma warning disable CS0168 // Variable is declared but never used
                 catch (Exception ex)
-#pragma warning restore CS0168 // Variable is declared but never used
                 {
                     // If it shoots an error, API is invalid.
                     APIValid = false;
-                    lblAPIStatus.Text = "API info is invalid!";
+                    lblAPIStatus.Text = "API info is invalid!:"+ex.Message;
                     lblAPIStatus.ForeColor = Color.Red;
                 }
             }
@@ -124,15 +115,18 @@ namespace BitMEXAssistant
                     lblAPIStatus.ForeColor = Color.Red;
                 }
             }
-#pragma warning disable CS0168 // Variable is declared but never used
             catch (Exception ex)
-#pragma warning restore CS0168 // Variable is declared but never used
             {
                 APIValid = false;
-                lblAPIStatus.Text = "API info is invalid!";
+                lblAPIStatus.Text = "API info is invalid!:"+ex.Message;
                 lblAPIStatus.ForeColor = Color.Red;
             }
         }
+
+       // internal new void ShowDialog()
+       // {
+       //     throw new NotImplementedException();
+       // }
 
         private void SaveSettings()
         {
@@ -210,8 +204,19 @@ namespace BitMEXAssistant
 
         private void metroButton1_Click(object sender, EventArgs e)
         {
-            FormClosed = true;
+            DialogClosed = true;
             this.Visible = false;
+        }
+
+        private void metroTextBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tbProxy_TextChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Proxy = tbProxy.Text.Trim();
+            SaveSettings();
         }
     }
 
